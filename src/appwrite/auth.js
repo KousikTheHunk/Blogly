@@ -55,6 +55,14 @@ export class AuthService {
             console.log("Appwrite serive :: logout :: error", error);
         }
     }
+
+   /* async getUser(userId) {
+        return await this.account.get(userId);
+        // or if using a "users" collection:
+        // return await this.databases.getDocument(dbId, usersCollectionId, userId);
+      } */
+
+
 }
 
 const authService = new AuthService();

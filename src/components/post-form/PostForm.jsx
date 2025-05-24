@@ -47,11 +47,16 @@ export default function PostForm({ post }) {
     if (dbPost) navigate(`/post/${dbPost.$id}`);
   };
 
-  const slugTransform = useCallback((val) => (
-    val.trim()
-       .toLowerCase()
-       .replace(/[^a-z\d]+/g, "-")
-  ), []);
+  const slugTransform = useCallback((value) => {
+    if (value && typeof value === "string")
+        return value
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-zA-Z\d\s]+/g, "-")
+            .replace(/\s/g, "-");
+
+    return "";
+}, []);
 
   useEffect(() => {
     const sub = watch((vals, { name }) => {
@@ -112,8 +117,9 @@ export default function PostForm({ post }) {
             label="Slug:"
             placeholder="Slug"
             style={styles.fullWidth}
+            /*{...register("slug", { required: true })}
+            onInput={(e) => setValue("slug", slugTransform(e.target.value), { shouldValidate: true })} */
             {...register("slug", { required: true })}
-            onInput={(e) => setValue("slug", slugTransform(e.target.value), { shouldValidate: true })}
           />
         </div>
         <div style={styles.mb4}>

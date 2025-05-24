@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";  
 import { Link, useNavigate, useParams } from "react-router-dom";
 import appwriteService from "../appwrite/config";
+//import authService from "../appwrite/auth";
 import { Button, Container } from "../components";
 import parse from "html-react-parser";
 import { useSelector } from "react-redux";
 
 export default function Post() {
   const [post, setPost] = useState(null);
+  //const [authorName, setAuthor] = useState(""); 
   const { slug } = useParams();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.auth.userData);
@@ -22,8 +24,19 @@ export default function Post() {
     appwriteService.getPost(slug).then((data) => {
       if (data) setPost(data);
       else navigate("/");
+
+      // 2) Fetch the author info by userId
+      /*authService.getUser(data.userId)
+        .then((user) => {
+          // assuming user has a `name` or `$id`/`email`
+          setAuthor(user.name || user.email || "Unknown Author");
+        })
+        .catch(() => {
+          setAuthor("Unknown Author");
+        }); */
+
     });
-  }, [slug, navigate]);  // slug and navigate are correct dependencies :contentReference[oaicite:1]{index=1}
+  }, [slug, navigate]);  // slug and navigate are correct dependencies 
 
   const deletePost = () => {
     if (!post) return;  // Guard against null
@@ -74,6 +87,7 @@ export default function Post() {
       fontWeight: 700,
       margin: 0
     },
+    /* author: { fontSize: 14, color: "#555", marginTop: 4 }, */
     content: {}
   };
 
@@ -115,9 +129,14 @@ export default function Post() {
           )}
         </div>
 
+        { /*<div style={styles.titleContainer}>
+          <h1 style={styles.title}>{post.title}</h1>
+          <div style={styles.author}>By: {authorName}</div>   {/* ← show author */}
+        { /*</div> */}
+
         <div style={styles.titleContainer}>
           <h1 style={styles.title}>{post.title}</h1>
-        </div>
+        </div>  
 
         <div style={styles.content}>{parse(post.content)}</div>
       </Container>
