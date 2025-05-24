@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import appwriteService from '../appwrite/config';
 import { Container, PostCard } from '../components';
+import { setPosts } from '../store/postSlice';
 
 export default function Home() {
-  const [posts, setPosts] = useState([]);
+  //const [posts, setPosts] = useState([]);
+
+  const dispatch = useDispatch();
+  // Read posts from Redux—in postsSlice assume `state.post.items`
+  const posts = useSelector((state) => state.post?.items ?? []);
+
 
   useEffect(() => {
     appwriteService.getPosts().then((res) => {
       if (res && res.documents) {
-        setPosts(res.documents);
+        //setPosts(res.documents);
+        dispatch(setPosts(res.documents));
       }
     });
   }, []);

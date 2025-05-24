@@ -1,16 +1,21 @@
 import React, { useState } from 'react';
 import { useDispatch , useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import authService from '../../appwrite/auth';
 import { logout } from '../../store/authSlice';
+import { clearPosts } from '../../store/postSlice';
 
 export default function LogoutBtn() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.userData);
   const [hovered, setHovered] = useState(false);
 
   const logoutHandler = () => {
     authService.logout().then(() => {
       dispatch(logout());
+      dispatch(clearPosts());
+      navigate('/');
     });
   };
 
