@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect , useRef } from 'react';
 import { useDispatch , useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import authService from '../../appwrite/auth';
@@ -9,7 +9,10 @@ export default function LogoutBtn() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.userData);
-  const [hovered, setHovered] = useState(false);
+  //const [hovered, setHovered] = useState(false);
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef();
+
 
   const logoutHandler = () => {
     authService.logout().then(() => {
@@ -20,7 +23,7 @@ export default function LogoutBtn() {
   };
 
   // Inline style object replacing Tailwind utilities
-  const styles = {
+  /*const styles = {
     container: {
       display: 'flex',
       flexDirection: 'column',
@@ -66,5 +69,82 @@ export default function LogoutBtn() {
         Logout
       </button>
     </div>
-  );
-}
+  );*/
+
+
+// Close dropdown when clicking outside
+useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (menuRef.current && !menuRef.current.contains(e.target)) {
+      setOpen(false);
+    }
+  };
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => document.removeEventListener('mousedown', handleClickOutside);
+}, []);
+
+const styles = {
+  container: {
+    position: 'relative',
+    display: 'inline-block',
+    fontFamily: 'Arial, sans-serif',
+  },
+  button: {
+    padding: '0.5rem 1rem',
+    borderRadius: '0.375rem',
+    backgroundColor: '#fff',
+    border: '1px solid #ccc',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+  },
+  dropdown: {
+    position: 'absolute',
+    top: '110%',
+    right: 0,
+    backgroundColor: '#fff',
+    border: '1px solid #e2e8f0',
+    borderRadius: '0.375rem',
+    boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+    width: '150px',
+    zIndex: 1000,
+  },
+  item: {
+    padding: '0.5rem 1rem',
+    cursor: 'pointer',
+    fontSize: '0.9rem',
+  },
+  itemHover: {
+    backgroundColor: '#f3f4f6',
+  },
+};
+
+return (
+  <div style={styles.container} ref={menuRef}>
+    <button
+      onClick={() => setOpen((o) => !o)}
+      style={styles.button}
+    >
+      {user?.name ? `Hello, ${user.name}` : 'Account'} ▾
+    </button>
+
+    {open && (
+      <div style={styles.dropdown}>
+        <div
+          style={styles.item}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = styles.itemHover.backgroundColor)}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+          onClick={logoutHandler}
+        >
+          Logout
+        </div>
+      </div>
+    )}
+  </div>
+);
+
+
+
+} 
